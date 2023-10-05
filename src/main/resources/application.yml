@@ -1,0 +1,29 @@
+# Core
+server:
+  port: 3500
+
+spring:
+  # NoSQL Database (MongoDB)
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: calculator-db
+
+# Initial Data
+data:
+  initial:
+    location:
+      operation: init-data/operations.json
+
+# Scheduler (Quartz)
+scheduler:
+  cron: 0/5 * * ? * * # every 5 second
+
+# Configurations
+count:
+  calculation: 3
+
+gap:
+  start: 1
+  end: 10

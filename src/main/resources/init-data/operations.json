@@ -1,0 +1,38 @@
+[
+  {
+    "code": 0,
+    "name": "summation"
+  },
+  {
+    "code": 1,
+    "name": "subtraction"
+  },
+  {
+    "code": 2,
+    "name": "multiplication"
+  },
+  {
+    "code": 3,
+    "name": "division"
+  },
+  {
+    "code": 4,
+    "name": "mod"
+  },
+  {
+    "code": 5,
+    "name": "power"
+  },
+  {
+    "code": 6,
+    "name": "average"
+  },
+  {
+    "code": 7,
+    "name": "maximum"
+  },
+  {
+    "code": 8,
+    "name": "minimum"
+  }
+]
