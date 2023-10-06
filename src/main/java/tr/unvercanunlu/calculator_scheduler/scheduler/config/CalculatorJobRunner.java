@@ -3,6 +3,8 @@ package tr.unvercanunlu.calculator_scheduler.scheduler.config;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.quartz.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +21,8 @@ import static org.quartz.CronScheduleBuilder.cronSchedule;
 @RequiredArgsConstructor
 public class CalculatorJobRunner {
 
+    private final Logger logger = LoggerFactory.getLogger(CalculatorJobRunner.class);
+
     private final Scheduler scheduler;
 
     @Value(value = "#{ ${count.calculation} }")
@@ -30,14 +34,14 @@ public class CalculatorJobRunner {
     @SneakyThrows
     @Bean
     public void run() {
-        System.out.println("Scheduler configuration is started.");
+        this.logger.info("Scheduler configuration is started.");
 
         JobDetail randomCalculationJob = JobBuilder.newJob(CalculatorJob.class)
                 .withIdentity("calculator-job-" + UUID.randomUUID())
                 .usingJobData("calculationCount", this.calculationCount)
                 .build();
 
-        System.out.println("'" + randomCalculationJob.getKey() + "' job is created.");
+        this.logger.debug("'" + randomCalculationJob.getKey() + "' job is created.");
 
         Date after3Seconds = Date.from(ZonedDateTime.now().plusSeconds(3).toInstant());
 
@@ -45,7 +49,7 @@ public class CalculatorJobRunner {
 
         CronExpression cronExpression = new CronExpression(this.cron);
 
-        System.out.println("'" + cronExpression.getCronExpression() + "' cron is created.");
+        this.logger.debug("'" + cronExpression.getCronExpression() + "' cron is created.");
 
         Trigger cronTriggerAfter3Second = TriggerBuilder.newTrigger()
                 .withIdentity("trigger-calculator-job-" + UUID.randomUUID())
@@ -53,10 +57,10 @@ public class CalculatorJobRunner {
                 .startAt(after3Seconds)
                 .build();
 
-        System.out.println("'" + cronTriggerAfter3Second.getKey() + "' trigger is created.");
+        this.logger.debug("'" + cronTriggerAfter3Second.getKey() + "' trigger is created.");
 
         this.scheduler.scheduleJob(randomCalculationJob, cronTriggerAfter3Second);
 
-        System.out.println("Scheduler configuration is end.");
+        this.logger.info("Scheduler configuration is end.");
     }
 }

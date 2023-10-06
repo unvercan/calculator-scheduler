@@ -1,9 +1,11 @@
-package tr.unvercanunlu.calculator_scheduler.config;
+package tr.unvercanunlu.calculator_scheduler.initialization;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,8 @@ import java.util.List;
 @Configuration
 @RequiredArgsConstructor
 public class DatabaseInitialization {
+
+    private final Logger logger = LoggerFactory.getLogger(DatabaseInitialization.class);
 
     private final IOperationRepository operationRepository;
 
@@ -54,34 +58,34 @@ public class DatabaseInitialization {
     @SneakyThrows
     @EventListener(value = ApplicationReadyEvent.class)
     public void initialize() {
-        System.out.println("Database initializing is started.");
+        this.logger.info("Database initializing is started.");
 
-        System.out.println("File at '" + this.filePath + "' is reading.");
+        this.logger.debug("File at '" + this.filePath + "' is reading.");
 
         InputStream stream = this.getFileAsStream(this.filePath);
         String content = this.readStreamByLine(stream);
 
-        System.out.println("File at '" + this.filePath + "' is read.");
+        this.logger.debug("File at '" + this.filePath + "' is read.");
 
-        System.out.println("File content: '" + content + "'.");
+        this.logger.debug("File content: '" + content + "'.");
 
         Type typeOfListOfOperations = new TypeToken<List<Operation>>() {
         }.getType();
 
         List<Operation> operations = this.gson.fromJson(content, typeOfListOfOperations);
 
-        System.out.println("'" + content + "' is converted to " + operations);
+        this.logger.debug("'" + content + "' is converted to " + operations);
 
         this.operationRepository.deleteAll();
 
-        System.out.println("All operations in the database are deleted.");
+        this.logger.debug("All operations in the database are deleted.");
 
         operations.forEach(operation -> {
             this.operationRepository.save(operation);
 
-            System.out.println(operation + " is saved to database.");
+            this.logger.debug(operation + " is saved to database.");
         });
 
-        System.out.println("Database initializing is end.");
+        this.logger.info("Database initializing is end.");
     }
 }

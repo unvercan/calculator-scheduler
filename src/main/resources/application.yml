@@ -1,7 +1,3 @@
-# Core
-server:
-  port: 3500
-
 spring:
   # NoSQL Database (MongoDB)
   data:
@@ -19,6 +15,13 @@ data:
 # Scheduler (Quartz)
 scheduler:
   cron: 0/5 * * ? * * # every 5 second
+
+# Logging
+logging:
+  level:
+    root: info
+    tr.unvercanunlu.calculator_scheduler.scheduler: debug
+    tr.unvercanunlu.calculator_scheduler.initialization: trace
 
 # Configurations
 count:

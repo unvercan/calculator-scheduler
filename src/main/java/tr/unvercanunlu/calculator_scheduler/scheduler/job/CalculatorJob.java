@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import tr.unvercanunlu.calculator_scheduler.entity.Calculation;
@@ -19,10 +21,16 @@ import java.util.stream.IntStream;
 @RequiredArgsConstructor
 public class CalculatorJob implements Job {
 
+    private final Logger logger = LoggerFactory.getLogger(CalculatorJob.class);
+
     private static final List<Operation> operationCache = new ArrayList<>();
+
     private final IOperationRepository operationRepository;
+
     private final ICalculationRepository calculationRepository;
+
     private final Random random = new Random();
+
     @Value(value = "#{ ${gap.start} }")
     private Integer startGap;
     @Value(value = "#{ ${gap.end} }")
@@ -31,18 +39,18 @@ public class CalculatorJob implements Job {
     @SneakyThrows
     @Override
     public void execute(JobExecutionContext context) {
-        System.out.println("Calculator job is started.");
+        this.logger.info("Calculator job is started.");
 
         if (operationCache.isEmpty()) {
-            System.out.println("Operation cache is empty.");
+            this.logger.debug("Operation cache is empty.");
 
             List<Operation> operations = this.operationRepository.findAll();
 
-            System.out.println("All operations in the database are fetched.");
+            this.logger.debug("All operations in the database are fetched.");
 
             operationCache.addAll(operations);
 
-            System.out.println("Operation cache is filled.");
+            this.logger.debug("Operation cache is filled.");
         }
 
         int calculationCount = (int) Optional.ofNullable(
@@ -81,13 +89,13 @@ public class CalculatorJob implements Job {
                     .calculatedDate(calculatedDate)
                     .build();
 
-            System.out.println(calculation + " is created.");
+            this.logger.debug(calculation + " is created.");
 
             calculation = this.calculationRepository.save(calculation);
 
-            System.out.println(calculation + " is saved to database.");
+            this.logger.debug(calculation + " is saved to database.");
         });
 
-        System.out.println("Calculator job is end.");
+        this.logger.info("Calculator job is end.");
     }
 }
