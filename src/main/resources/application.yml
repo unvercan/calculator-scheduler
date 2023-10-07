@@ -1,3 +1,7 @@
+# Server
+server:
+  port: 3535
+
 spring:
   # NoSQL Database (MongoDB)
   data:

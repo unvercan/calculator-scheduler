@@ -3,7 +3,6 @@ package tr.unvercanunlu.calculator_scheduler.initialization;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +13,7 @@ import tr.unvercanunlu.calculator_scheduler.entity.Operation;
 import tr.unvercanunlu.calculator_scheduler.repository.IOperationRepository;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
@@ -34,28 +34,32 @@ public class DatabaseInitialization {
     @Value(value = "${data.initial.location.operation}")
     private String filePath;
 
-    @SneakyThrows
     private InputStream getFileAsStream(String filePath) {
         ClassLoader classLoader = getClass().getClassLoader();
         return classLoader.getResourceAsStream(filePath);
     }
 
-    @SneakyThrows
     private String readStreamByLine(InputStream stream) {
         List<String> lines = new ArrayList<>();
 
         InputStreamReader streamReader = new InputStreamReader(stream, StandardCharsets.UTF_8);
         BufferedReader reader = new BufferedReader(streamReader);
 
-        String line;
-        while ((line = reader.readLine()) != null) {
-            lines.add(line);
+        try {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+        } catch (IOException e) {
+            this.logger.info("An error is happened while reading the file.");
+
+            throw new RuntimeException("File cannot be read.");
         }
 
         return String.join("", lines);
     }
 
-    @SneakyThrows
     @EventListener(value = ApplicationReadyEvent.class)
     public void initialize() {
         this.logger.info("Database initializing is started.");

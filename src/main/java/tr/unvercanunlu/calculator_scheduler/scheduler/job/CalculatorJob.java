@@ -1,7 +1,6 @@
 package tr.unvercanunlu.calculator_scheduler.scheduler.job;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.slf4j.Logger;
@@ -33,10 +32,10 @@ public class CalculatorJob implements Job {
 
     @Value(value = "#{ ${gap.start} }")
     private Integer startGap;
+
     @Value(value = "#{ ${gap.end} }")
     private Integer endGap;
 
-    @SneakyThrows
     @Override
     public void execute(JobExecutionContext context) {
         this.logger.info("Calculator job is started.");

@@ -1,7 +1,6 @@
 package tr.unvercanunlu.calculator_scheduler.scheduler.config;
 
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import tr.unvercanunlu.calculator_scheduler.scheduler.job.CalculatorJob;
 
+import java.text.ParseException;
 import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.Optional;
@@ -31,7 +31,6 @@ public class CalculatorJobRunner {
     @Value(value = "${scheduler.cron}")
     private String cron;
 
-    @SneakyThrows
     @Bean
     public void run() {
         this.logger.info("Scheduler configuration is started.");
@@ -47,7 +46,16 @@ public class CalculatorJobRunner {
 
         this.cron = Optional.ofNullable(this.cron).orElse("0 * * ? * *"); // every minute as default cron
 
-        CronExpression cronExpression = new CronExpression(this.cron);
+        CronExpression cronExpression;
+
+        try {
+            cronExpression = new CronExpression(this.cron);
+
+        } catch (ParseException e) {
+            this.logger.info("An error is happened while parsing the cron expression.");
+
+            throw new RuntimeException("Cron expression cannot be parsed.");
+        }
 
         this.logger.debug("'" + cronExpression.getCronExpression() + "' cron is created.");
 
@@ -59,7 +67,14 @@ public class CalculatorJobRunner {
 
         this.logger.debug("'" + cronTriggerAfter3Second.getKey() + "' trigger is created.");
 
-        this.scheduler.scheduleJob(randomCalculationJob, cronTriggerAfter3Second);
+        try {
+            this.scheduler.scheduleJob(randomCalculationJob, cronTriggerAfter3Second);
+
+        } catch (SchedulerException e) {
+            this.logger.info("An error is happened while scheduling the job.");
+
+            throw new RuntimeException("Scheduler cannot schedule the job.");
+        }
 
         this.logger.info("Scheduler configuration is end.");
     }
