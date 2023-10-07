@@ -20,6 +20,8 @@
     <name>calculator-scheduler</name>
     <description>Calculator with Quartz Scheduler App</description>
 
+    <packaging>jar</packaging>
+
     <properties>
         <java.version>17</java.version>
         <java.version>17</java.version>
