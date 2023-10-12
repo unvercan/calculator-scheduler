@@ -45,7 +45,7 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
 
-        <!-- Reduce boilerplate (Lombok) -->
+        <!-- Reduce Boilerplate (Lombok) -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
